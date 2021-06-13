@@ -9,6 +9,12 @@ eventListeners();
 function eventListeners(){
         formulario.addEventListener('submit', agregarTweet);
 
+        document.addEventListener('DOMContentLoaded', () => {
+                tweets = JSON.parse(localStorage.getItem('tweets')) || [];
+
+                crearHTML();
+        });
+
 }
 
 
@@ -58,18 +64,44 @@ function crearHTML() {
 
         if(tweets.length > 0){
                 tweets.forEach( tweet => {
+
+                        const btnEliminar = document.createElement('a');
+                        btnEliminar.classList.add('borrar-tweet');
+                        btnEliminar.innerHTML = 'X';
+
+                        btnEliminar.onclick = () => {
+                                borrarTweet(tweet.id);
+                        }
+
                         const li = document.createElement('li');
 
                         li.innerText = tweet.texto;
 
+                        li.appendChild(btnEliminar);
+
                         listaTweets.appendChild(li);
                 })
         }
+
+        sincronizarStorage();
 }
+
+function sincronizarStorage() {
+        localStorage.setItem('tweets', JSON.stringify(tweets));
+}
+
+
 
 // Limpiar HTML
 function limpiarHTML() {
         while(listaTweets.firstChild){
                 listaTweets.removeChild(listaTweets.firstChild);
         }
+}
+
+// Eliminar Tweet
+function borrarTweet(id) {
+        tweets = tweets.filter( tweet => tweet.id !== id);
+
+        crearHTML();
 }
